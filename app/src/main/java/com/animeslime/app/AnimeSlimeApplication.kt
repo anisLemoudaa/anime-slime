@@ -7,6 +7,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 import androidx.room.Room
 import com.animeslime.app.data.*
+import com.animeslime.data.SourceRegistry
+import com.animeslime.data.AnimeLekAnimeSource
+import com.animeslime.data.WitAnimeAnimeSource
+import com.animeslime.data.DonghuaArAnimeSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,6 +29,7 @@ import javax.inject.Singleton
  @Provides @Singleton fun animeLekSource()=AnimeLekSource()
  @Provides @Singleton fun animeLekCatalog()=AnimeLekCatalog()
  @Provides @Singleton fun catalogRegistry(animeLek:AnimeLekCatalog)=CatalogRegistry(listOf(animeLek,WitAnimeCatalog(),DonghuaCatalog()))
- @Provides @Singleton fun resolverRegistry()=ServerResolverRegistry(listOf(DonghuaServerResolver(),WitAnimeServerResolver(),AnimeLekServerResolver()))
+	 @Provides @Singleton fun resolverRegistry()=ServerResolverRegistry(listOf(DonghuaServerResolver(),WitAnimeServerResolver(),AnimeLekServerResolver()))
+	 @Provides @Singleton fun sourceRegistry()=SourceRegistry(listOf(AnimeLekAnimeSource(),WitAnimeAnimeSource(),DonghuaArAnimeSource()))
  @Provides @Singleton fun oauthManager(app:Application)=OAuthManager(app)
 }

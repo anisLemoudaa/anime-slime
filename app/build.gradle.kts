@@ -22,6 +22,10 @@ kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarg
 ksp { arg("room.schemaLocation", "$projectDir/schemas"); arg("room.generateKotlin", "true") }
 
 dependencies {
+    implementation(project(":source-api"))
+    implementation(project(":domain"))
+    implementation(project(":data"))
+    implementation(project(":presentation-core"))
     implementation(platform("androidx.compose:compose-bom:2024.12.01"))
     implementation("androidx.activity:activity-compose:1.10.0")
     implementation("androidx.compose.ui:ui")

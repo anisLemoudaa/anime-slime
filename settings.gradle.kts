@@ -6,4 +6,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = "AnimeSlime"
-include(":app")
+include(":app", ":source-api", ":domain", ":data", ":presentation-core")

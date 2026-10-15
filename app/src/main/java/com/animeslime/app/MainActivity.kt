@@ -46,7 +46,7 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
                 composable("browse"){BrowseScreen()}
                 composable("more"){MoreScreen{nav.navigate("settings")}}
                 composable("settings"){SettingsScreen{nav.popBackStack()}}
-                composable("details"){DetailsScreen{nav.popBackStack()}}
+                composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player")}}
                 composable("player"){PlayerScreen(null){nav.popBackStack()}}
             }
         }

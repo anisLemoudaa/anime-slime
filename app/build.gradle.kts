@@ -12,8 +12,6 @@ android { namespace = "com.animeslime.app"; compileSdk = 35
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
 }
 
-kotlin { jvmToolchain(17) }
-
 ksp { arg("room.schemaLocation", "$projectDir/schemas"); arg("room.generateKotlin", "true") }
 
 dependencies {

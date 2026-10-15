@@ -51,7 +51,7 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
             NavHost(navController=nav,startDestination="home",modifier=Modifier.padding(pad)) {
                 composable("home"){HomeScreen({url->nav.navigate("sourceDetails/${Uri.encode(url)}")}){nav.navigate("search")}}
                 composable("search"){SearchScreen({nav.popBackStack()}){url->nav.navigate("sourceDetails/${Uri.encode(url)}")}}
-                composable("sourceDetails/{url}"){entry->SourceDetailsScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()),{nav.popBackStack()}){video->if(video.contains("#episode-")||video.contains("animelek.cc")||video.contains("animedar.net")||video.contains("witanime.site")||video.contains("donghua-ar.me"))nav.navigate("webEpisode?url=${Uri.encode(video.substringBefore("#"))}")else nav.navigate("player?url=${Uri.encode(video)}")}}
+                composable("sourceDetails/{url}"){entry->SourceDetailsScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()),{nav.popBackStack()}){video->if(video.contains("#episode-")||video.contains("animelek.cc")||video.contains("animedar.net")||video.contains("witanime.site")||video.contains("donghua-ar.me")||video.contains("filemoon")||video.contains("bysezoxexe"))nav.navigate("webEpisode?url=${Uri.encode(video.substringBefore("#"))}")else nav.navigate("player?url=${Uri.encode(video)}")}}
                 composable("library"){LibraryScreen{nav.navigate("details")}}
                 composable("updates"){UpdatesScreen()}
                 composable("browse"){BrowseScreen()}

@@ -23,5 +23,13 @@ import kotlinx.coroutines.flow.Flow
  @Query("DELETE FROM Repository WHERE id=:id") suspend fun delete(id:Long)
  @Query("UPDATE Repository SET enabled=:enabled WHERE id=:id") suspend fun setEnabled(id:Long,enabled:Boolean)
 }
+@Dao interface ExtensionDao {
+ @Query("SELECT * FROM Extension ORDER BY installed DESC,name") fun all():Flow<List<Extension>>
+ @Query("SELECT * FROM Extension WHERE installed=1 AND enabled=1 ORDER BY name") fun installed():Flow<List<Extension>>
+ @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsertAll(items:List<Extension>)
+ @Query("UPDATE Extension SET installed=:value WHERE pkg=:pkg") suspend fun setInstalled(pkg:String,value:Boolean)
+ @Query("UPDATE Extension SET enabled=:value WHERE pkg=:pkg") suspend fun setEnabled(pkg:String,value:Boolean)
+ @Query("DELETE FROM Extension WHERE pkg=:pkg") suspend fun delete(pkg:String)
+}
 @Dao interface HistoryDao { @Query("SELECT * FROM History ORDER BY watchedAt DESC LIMIT 100") fun recent():Flow<List<History>>; @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun save(item:History); @Query("DELETE FROM History") suspend fun clear() }
 @Dao interface DownloadDao { @Query("SELECT * FROM DownloadItem ORDER BY rowid") fun all():Flow<List<DownloadItem>>; @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsert(item:DownloadItem); @Query("UPDATE DownloadItem SET state=:state,progress=:progress,error=:error WHERE episodeId=:id") suspend fun update(id:Long,state:String,progress:Int,error:String?=null) }

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.animeslime.app.data.Repository
+import com.animeslime.app.data.Extension
 import com.animeslime.app.ui.RepositoryViewModel
 import com.animeslime.app.ui.SettingsViewModel
 import com.animeslime.app.ui.LibraryViewModel
@@ -32,23 +33,31 @@ import com.animeslime.app.ui.theme.*
 @Composable fun UpdatesScreen()=LazyColumn(Modifier.fillMaxSize().background(Ink)){item{Header("التحديثات")};item{Row(Modifier.padding(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){Chip("التحديثات",true);Chip("السجل");Chip("التنزيلات")}};items(listOf("ظل الفجر · الحلقة 4","كوكب الحدود · الحلقة 11","ملاذ النجوم · الحلقة 12")){NewRow(it,"متاح الآن")}}
 
 @Composable fun BrowseScreen(){
- val vm:RepositoryViewModel=hiltViewModel(); val state by vm.state.collectAsState(); var tab by remember{mutableStateOf(0)}; var url by remember{mutableStateOf("")}
- LazyColumn(Modifier.fillMaxSize().background(Ink)){
-  item{Header("التصفح")}
-  item{Row(Modifier.padding(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){Chip("المصادر",tab==0){tab=0};Chip("الإضافات",tab==1){tab=1};Chip("المستودعات",tab==2){tab=2}}}
+ val vm:RepositoryViewModel=hiltViewModel()
+ val state by vm.state.collectAsState()
+ var tab by remember{mutableStateOf(0)}
+ var url by remember{mutableStateOf("")}
+ LazyColumn(Modifier.fillMaxSize().background(Ink)) {
+  item { Header("التصفح") }
+  item { Row(Modifier.padding(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){Chip("المصادر",tab==0){tab=0};Chip("الإضافات",tab==1){tab=1};Chip("المستودعات",tab==2){tab=2}} }
   if(tab==2){
-   item{Text("أضف مستودعًا",color=Mint,fontWeight=FontWeight.Bold,modifier=Modifier.padding(20.dp,18.dp,20.dp,8.dp))}
-   item{Row(Modifier.padding(horizontal=20.dp),verticalAlignment=Alignment.CenterVertically){OutlinedTextField(value=url,onValueChange={url=it},modifier=Modifier.weight(1f),singleLine=true,label={Text("رابط index.min.json")});Spacer(Modifier.width(8.dp));Button(onClick={vm.add(url)},enabled=url.isNotBlank()&&!state.loading){Text(if(state.loading)"..." else "إضافة")}}}
-   item{Text("تأكد من الثقة بالمصادر الخارجية؛ الإضافات المثبتة تبقى محليًا عند حذف المستودع.",color=Muted,fontSize=12.sp,modifier=Modifier.padding(20.dp,10.dp))}
-   state.error?.let{msg->item{Text(msg,color=Color(0xFFFF8A80),modifier=Modifier.padding(horizontal=20.dp))}}
-   state.message?.let{msg->item{Text(msg,color=Mint,modifier=Modifier.padding(horizontal=20.dp))}}
+   item { Text("أضف مستودعًا",color=Mint,fontWeight=FontWeight.Bold,modifier=Modifier.padding(20.dp,18.dp,20.dp,8.dp)) }
+   item { Row(Modifier.padding(horizontal=20.dp),verticalAlignment=Alignment.CenterVertically){OutlinedTextField(value=url,onValueChange={url=it},modifier=Modifier.weight(1f),singleLine=true,label={Text("رابط index.min.json")});Spacer(Modifier.width(8.dp));Button(onClick={vm.add(url)},enabled=url.isNotBlank()&&!state.loading){Text(if(state.loading)"..." else "إضافة")}} }
+   state.error?.let{item{Text(it,color=Color(0xFFFF8A80),modifier=Modifier.padding(20.dp))}}
+   state.message?.let{item{Text(it,color=Mint,modifier=Modifier.padding(20.dp))}}
    items(state.repositories){repo->RepositoryRow(repo,{vm.refresh(repo)},{vm.toggle(repo)},{vm.remove(repo)})}
+  } else if(tab==1){
+   item{Text("إضافات المستودعات",color=Mint,fontWeight=FontWeight.Bold,modifier=Modifier.padding(20.dp))}
+   if(state.extensions.isEmpty()) item{Text("أضف مستودعًا لفهرسة الإضافات.",color=Muted,modifier=Modifier.padding(20.dp))}
+   else items(state.extensions){ext->ExtensionRow(ext,{vm.install(ext)},{vm.uninstall(ext)},{vm.toggleExtension(ext)})}
   } else {
-   item{Section(if(tab==0)"المصادر المفعّلة" else "الإضافات")}
-   if(tab==0) items(state.repositories.filter{it.enabled}){SourceRow(it.name)} else item{Text("تثبيت الإضافات من المستودعات المفعّلة سيُتاح بعد جلب الفهارس والتحقق من التوقيع.",color=Muted,modifier=Modifier.padding(20.dp))}
+   item{Section("المصادر المتاحة")};item{SourceRow("Animelek · مدمج")}
+   items(state.extensions.filter{it.installed&&it.enabled}){ext->SourceRow(ext.name)}
+   if(state.extensions.none{it.installed&&it.enabled}) item{Text("ثبّت إضافة من تبويب الإضافات لإظهار مصدرها هنا.",color=Muted,modifier=Modifier.padding(20.dp))}
   }
  }
 }
+@Composable fun ExtensionRow(ext:Extension,install:()->Unit,uninstall:()->Unit,toggle:()->Unit){Surface(color=Surface,shape=RoundedCornerShape(18.dp),border=BorderStroke(1.dp,Border),modifier=Modifier.padding(horizontal=20.dp,vertical=5.dp)){Column(Modifier.padding(14.dp)){Row(verticalAlignment=Alignment.CenterVertically){Text(ext.name,Modifier.weight(1f),fontWeight=FontWeight.Bold);Text(if(ext.installed)"مثبّت" else "غير مثبت",color=if(ext.installed)Mint else Muted,fontSize=12.sp)};Text("${ext.lang} · v${ext.version} · ${if(ext.adapter.isBlank())"محول غير محدد" else ext.adapter}",color=Muted,fontSize=12.sp);Row(horizontalArrangement=Arrangement.End,modifier=Modifier.fillMaxWidth()){if(ext.installed){TextButton(toggle){Text(if(ext.enabled)"تعطيل" else "تفعيل")};TextButton(uninstall){Text("إزالة")}}else TextButton(install){Text("تثبيت")}}}}}
 @Composable fun SourceRow(name:String){Surface(color=Surface,shape=RoundedCornerShape(18.dp),border=BorderStroke(1.dp,Border),modifier=Modifier.padding(horizontal=20.dp,vertical=5.dp)){Row(Modifier.padding(14.dp),verticalAlignment=Alignment.CenterVertically){Box(Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(Mint));Column(Modifier.weight(1f).padding(horizontal=12.dp)){Text(name,fontWeight=FontWeight.Bold);Text("الأحدث · الشائع · بحث",color=Muted,fontSize=12.sp)};Icon(Icons.Default.PushPin,"تثبيت",tint=Mint)}}}
 
 @Composable fun MoreScreen(openSettings:()->Unit,openBackup:()->Unit={},openAccounts:()->Unit={})=LazyColumn(Modifier.fillMaxSize().background(Ink)){item{Header("المزيد")};item{Surface(color=Surface,shape=RoundedCornerShape(18.dp),modifier=Modifier.padding(20.dp).clickable{openAccounts()}){Row(Modifier.padding(16.dp),verticalAlignment=Alignment.CenterVertically){Icon(Icons.Default.AccountCircle,null,tint=Mint,modifier=Modifier.size(44.dp));Column(Modifier.padding(horizontal=12.dp)){Text("حساب Anime Slime",fontWeight=FontWeight.Bold);Text("دخول للمزامنة السحابية الاختيارية",color=Muted,fontSize=12.sp)}}}};items(listOf("التنزيلات","الإحصاءات")){MenuRow(it,Icons.Default.Folder)};item{MenuRow("الحسابات والمزامنة",Icons.Default.AccountCircle,openAccounts)};item{MenuRow("الإعدادات",Icons.Default.Settings,openSettings)};item{MenuRow("النسخ الاحتياطي والاستعادة",Icons.Default.Backup,openBackup)};item{MenuRow("حول التطبيق",Icons.Default.Info)}}

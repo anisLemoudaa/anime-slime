@@ -9,7 +9,7 @@ data class Episode(@PrimaryKey(autoGenerate=true) val id:Long=0,val animeId:Long
 @Entity data class Category(@PrimaryKey(autoGenerate=true) val id:Long=0,val name:String,val order:Int=0)
 @Entity(primaryKeys=["animeId","categoryId"]) data class AnimeCategory(val animeId:Long,val categoryId:Long)
 @Entity(foreignKeys=[ForeignKey(entity=Episode::class,parentColumns=["id"],childColumns=["episodeId"],onDelete=ForeignKey.CASCADE)]) data class History(@PrimaryKey val episodeId:Long,val watchedAt:Long=System.currentTimeMillis(),val progressMs:Long=0)
-@Entity(foreignKeys=[ForeignKey(entity=Episode::class,parentColumns=["id"],childColumns=["episodeId"],onDelete=ForeignKey.CASCADE)]) data class DownloadItem(@PrimaryKey val episodeId:Long,val state:String="QUEUED",val progress:Int=0,val filePath:String?=null,val error:String?=null)
+@Entity(foreignKeys=[ForeignKey(entity=Episode::class,parentColumns=["id"],childColumns=["episodeId"],onDelete=ForeignKey.CASCADE)]) data class DownloadItem(@PrimaryKey val episodeId:Long,val url:String,val state:String="QUEUED",val progress:Int=0,val filePath:String?=null,val error:String?=null)
 @Entity data class Repository(@PrimaryKey(autoGenerate=true) val id:Long=0,val name:String,val url:String,val enabled:Boolean=true,val trusted:Boolean=false,val extensionCount:Int=0,val lastFetched:Long?=null,val lastError:String?=null)
 @Entity(indices=[Index(value=["pkg","repoId"],unique=true)])
 data class Extension(@PrimaryKey val pkg:String,val name:String,val lang:String,val version:String,val repoId:Long,val installed:Boolean=false,val enabled:Boolean=true,val nsfw:Boolean=false,val adapter:String="",val baseUrl:String?=null,val manifestUrl:String?=null)

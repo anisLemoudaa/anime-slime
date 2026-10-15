@@ -55,10 +55,11 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
                 composable("library"){LibraryScreen{nav.navigate("details")}}
                 composable("updates"){UpdatesScreen()}
                 composable("browse"){BrowseScreen()}
-                composable("more"){MoreScreen({nav.navigate("settings")},{nav.navigate("backup")},{nav.navigate("accounts")})}
+                composable("more"){MoreScreen({nav.navigate("settings")},{nav.navigate("backup")},{nav.navigate("accounts")},{nav.navigate("downloads")})}
                 composable("accounts"){AccountsScreen{nav.popBackStack()}}
                 composable("settings"){SettingsScreen{nav.popBackStack()}}
                 composable("backup"){BackupScreen{nav.popBackStack()}}
+                composable("downloads"){DownloadsScreen{nav.popBackStack()}}
                 composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player?url=")}}
                 composable("player?url={url}"){entry->PlayerScreen(entry.arguments?.getString("url")?.let(Uri::decode)){nav.popBackStack()}}
                 composable("webEpisode?url={url}"){entry->WebEpisodeScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()))}

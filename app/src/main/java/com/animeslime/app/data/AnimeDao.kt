@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.Flow
  @Query("UPDATE Anime SET inLibrary=:value,lastUpdate=:time WHERE id=:id") suspend fun setLibrary(id:Long,value:Boolean,time:Long=System.currentTimeMillis())
  @Query("DELETE FROM Anime WHERE id=:id") suspend fun delete(id:Long)
 }
+data class DownloadRow(val episodeId:Long,val url:String,val state:String,val progress:Int,val filePath:String?,val error:String?,val number:Double,val episodeName:String?,val animeTitle:String)
 @Dao interface EpisodeDao {
  @Query("SELECT * FROM Episode WHERE animeId=:animeId ORDER BY number ASC") fun forAnime(animeId:Long):Flow<List<Episode>>
  @Query("SELECT * FROM Episode WHERE id=:id LIMIT 1") suspend fun byId(id:Long):Episode?
+ @Query("SELECT * FROM Episode WHERE animeId=:animeId AND number=:number LIMIT 1") suspend fun byAnimeAndNumber(animeId:Long,number:Double):Episode?
  @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsertAll(episodes:List<Episode>)
  @Query("UPDATE Episode SET seen=:seen,progressMs=:progress,durationMs=:duration WHERE id=:id") suspend fun saveProgress(id:Long,seen:Boolean,progress:Long,duration:Long)
  @Query("UPDATE Episode SET downloaded=:value WHERE id=:id") suspend fun setDownloaded(id:Long,value:Boolean)
@@ -32,4 +34,4 @@ import kotlinx.coroutines.flow.Flow
  @Query("DELETE FROM Extension WHERE pkg=:pkg") suspend fun delete(pkg:String)
 }
 @Dao interface HistoryDao { @Query("SELECT * FROM History ORDER BY watchedAt DESC LIMIT 100") fun recent():Flow<List<History>>; @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun save(item:History); @Query("DELETE FROM History") suspend fun clear() }
-@Dao interface DownloadDao { @Query("SELECT * FROM DownloadItem ORDER BY rowid") fun all():Flow<List<DownloadItem>>; @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsert(item:DownloadItem); @Query("UPDATE DownloadItem SET state=:state,progress=:progress,error=:error WHERE episodeId=:id") suspend fun update(id:Long,state:String,progress:Int,error:String?=null) }
+@Dao interface DownloadDao { @Query("SELECT * FROM DownloadItem ORDER BY rowid") fun all():Flow<List<DownloadItem>>; @Query("SELECT d.episodeId,d.url,d.state,d.progress,d.filePath,d.error,e.number,e.name AS episodeName,a.title AS animeTitle FROM DownloadItem d JOIN Episode e ON e.id=d.episodeId JOIN Anime a ON a.id=e.animeId ORDER BY d.episodeId DESC") fun rows():Flow<List<DownloadRow>>; @Query("SELECT * FROM DownloadItem WHERE episodeId=:id LIMIT 1") suspend fun byId(id:Long):DownloadItem?; @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsert(item:DownloadItem); @Query("UPDATE DownloadItem SET state=:state,progress=:progress,error=:error,filePath=:path WHERE episodeId=:id") suspend fun update(id:Long,state:String,progress:Int,error:String?=null,path:String?=null); @Query("DELETE FROM DownloadItem WHERE episodeId=:id") suspend fun delete(id:Long) }

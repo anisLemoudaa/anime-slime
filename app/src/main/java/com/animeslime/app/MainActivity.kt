@@ -62,7 +62,7 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
                 composable("downloads"){DownloadsScreen{nav.popBackStack()}}
                 composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player?url=")}}
                 composable("player?url={url}"){entry->PlayerScreen(entry.arguments?.getString("url")?.let(Uri::decode)){nav.popBackStack()}}
-                composable("webEpisode?url={url}"){entry->WebEpisodeScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()))}
+                composable("webEpisode?url={url}"){entry->WebEpisodeScreen(Uri.decode(entry.arguments?.getString("url").orEmpty())){nav.popBackStack()}}
             }
         }
     }

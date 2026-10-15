@@ -33,7 +33,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); setContent { AnimeSlimeTheme { AnimeSlimeApp() } } }
+    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); handleOAuth(intent); setContent { AnimeSlimeTheme { AnimeSlimeApp() } } }
+    override fun onNewIntent(intent: android.content.Intent){super.onNewIntent(intent);setIntent(intent);handleOAuth(intent)}
+    private fun handleOAuth(intent:android.content.Intent?){intent?.data?.let{if(it.scheme=="animeslime"&&it.host=="oauth")com.animeslime.app.data.OAuthBus.emit(it)}}
     override fun onUserLeaveHint(){super.onUserLeaveHint();if(Build.VERSION.SDK_INT>=26&&!isFinishing)enterPictureInPictureMode(PictureInPictureParams.Builder().build())}
 }
 
@@ -52,7 +54,8 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
                 composable("library"){LibraryScreen{nav.navigate("details")}}
                 composable("updates"){UpdatesScreen()}
                 composable("browse"){BrowseScreen()}
-                composable("more"){MoreScreen({nav.navigate("settings")}){nav.navigate("backup")}}
+                composable("more"){MoreScreen({nav.navigate("settings")},{nav.navigate("backup")},{nav.navigate("accounts")})}
+                composable("accounts"){AccountsScreen{nav.popBackStack()}}
                 composable("settings"){SettingsScreen{nav.popBackStack()}}
                 composable("backup"){BackupScreen{nav.popBackStack()}}
                 composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player?url=")}}

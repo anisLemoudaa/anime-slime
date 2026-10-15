@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.map
 
 private val Context.store by preferencesDataStore("anime_slime_settings")
 class AppPreferences(private val context:Context){
- private object K{val firstRun=booleanPreferencesKey("first_run");val dark=stringPreferencesKey("theme");val accent=stringPreferencesKey("accent");val language=stringPreferencesKey("language");val autoIntro=booleanPreferencesKey("auto_intro");val autoNext=booleanPreferencesKey("auto_next");val skipSeconds=intPreferencesKey("skip_seconds");val wifiOnly=booleanPreferencesKey("wifi_only");val stealth=booleanPreferencesKey("stealth");val hiddenAdult=booleanPreferencesKey("hidden_adult");val notifications=booleanPreferencesKey("notifications")}
+ private object K{val firstRun=booleanPreferencesKey("first_run");val dark=stringPreferencesKey("theme");val accent=stringPreferencesKey("accent");val language=stringPreferencesKey("language");val autoIntro=booleanPreferencesKey("auto_intro");val autoNext=booleanPreferencesKey("auto_next");val skipSeconds=intPreferencesKey("skip_seconds");val wifiOnly=booleanPreferencesKey("wifi_only");val stealth=booleanPreferencesKey("stealth");val hiddenAdult=booleanPreferencesKey("hidden_adult");val notifications=booleanPreferencesKey("notifications");val aniToken=stringPreferencesKey("anilist_token");val aniRefresh=stringPreferencesKey("anilist_refresh");val malToken=stringPreferencesKey("mal_token");val malRefresh=stringPreferencesKey("mal_refresh")}
  val settings=context.store.data.map{p->Settings(p[K.firstRun]?:true,p[K.dark]?:"dark",p[K.accent]?:"cyan",p[K.language]?:"ar",p[K.autoIntro]?:true,p[K.autoNext]?:true,p[K.skipSeconds]?:10,p[K.wifiOnly]?:true,p[K.stealth]?:false,p[K.hiddenAdult]?:true,p[K.notifications]?:true)}
  suspend fun setFirstRun(value:Boolean)=context.store.edit{it[K.firstRun]=value}
  suspend fun setStealth(value:Boolean)=context.store.edit{it[K.stealth]=value}
@@ -16,5 +16,9 @@ class AppPreferences(private val context:Context){
  suspend fun setWifiOnly(value:Boolean)=context.store.edit{it[K.wifiOnly]=value}
  suspend fun setNotifications(value:Boolean)=context.store.edit{it[K.notifications]=value}
  suspend fun setAccent(value:String)=context.store.edit{it[K.accent]=value}
+ val trackerTokens=context.store.data.map{TrackerTokens(it[K.aniToken],it[K.aniRefresh],it[K.malToken],it[K.malRefresh])}
+ suspend fun setTrackerToken(provider:String,token:String,refresh:String?)=context.store.edit{if(provider=="mal"){it[K.malToken]=token;if(refresh!=null)it[K.malRefresh]=refresh}else{it[K.aniToken]=token;if(refresh!=null)it[K.aniRefresh]=refresh}}
+ suspend fun clearTrackerToken(provider:String)=context.store.edit{if(provider=="mal"){it.remove(K.malToken);it.remove(K.malRefresh)}else{it.remove(K.aniToken);it.remove(K.aniRefresh)}}
 }
 data class Settings(val firstRun:Boolean,val theme:String,val accent:String,val language:String,val autoIntro:Boolean,val autoNext:Boolean,val skipSeconds:Int,val wifiOnly:Boolean,val stealth:Boolean,val hiddenAdult:Boolean,val notifications:Boolean)
+data class TrackerTokens(val anilist:String?=null,val anilistRefresh:String?=null,val mal:String?=null,val malRefresh:String?=null)

@@ -6,9 +6,13 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.52"
 }
 
+val anilistClientId = System.getenv("ANILIST_CLIENT_ID") ?: "53903"
+val anilistClientSecret = System.getenv("ANILIST_CLIENT_SECRET") ?: ""
+val malClientId = System.getenv("MAL_CLIENT_ID") ?: "7391d69229188a5c8050c264539f8403"
 android { namespace = "com.animeslime.app"; compileSdk = 35
     defaultConfig { applicationId = "com.animeslime.app"; minSdk = 26; targetSdk = 35; versionCode = 100; versionName = "1.0.0" }
     buildFeatures { compose = true; buildConfig = true }
+    defaultConfig { buildConfigField("String", "ANILIST_CLIENT_ID", "\"$anilistClientId\""); buildConfigField("String", "ANILIST_CLIENT_SECRET", "\"$anilistClientSecret\""); buildConfigField("String", "MAL_CLIENT_ID", "\"$malClientId\""); buildConfigField("String", "OAUTH_REDIRECT_URI", "\"animeslime://oauth/callback\"") }
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
 }

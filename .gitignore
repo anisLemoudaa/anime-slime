@@ -6,5 +6,6 @@ build/
 app/build/
 .externalNativeBuild/
 .cxx/
+\.kotlin/
 *.jks
 *.keystore

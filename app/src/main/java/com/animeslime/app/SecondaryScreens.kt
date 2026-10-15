@@ -51,7 +51,7 @@ import com.animeslime.app.ui.theme.*
    if(state.extensions.isEmpty()) item{Text("أضف مستودعًا لفهرسة الإضافات.",color=Muted,modifier=Modifier.padding(20.dp))}
    else items(state.extensions){ext->ExtensionRow(ext,{vm.install(ext)},{vm.uninstall(ext)},{vm.toggleExtension(ext)})}
   } else {
-   item{Section("المصادر المتاحة")};item{SourceRow("Animelek · مدمج")}
+   item{Section("المصادر المتاحة")};item{SourceRow("Animelek · مدمج")};item{SourceRow("WitAnime · مدمج")};item{SourceRow("Donghua-Ar · مدمج")}
    items(state.extensions.filter{it.installed&&it.enabled}){ext->SourceRow(ext.name)}
    if(state.extensions.none{it.installed&&it.enabled}) item{Text("ثبّت إضافة من تبويب الإضافات لإظهار مصدرها هنا.",color=Muted,modifier=Modifier.padding(20.dp))}
   }

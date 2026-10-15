@@ -24,5 +24,6 @@ import javax.inject.Singleton
  @Provides @Singleton fun repositoryService()=RepositoryService()
  @Provides @Singleton fun animeLekSource()=AnimeLekSource()
  @Provides @Singleton fun animeLekCatalog()=AnimeLekCatalog()
+ @Provides @Singleton fun catalogRegistry(animeLek:AnimeLekCatalog)=CatalogRegistry(listOf(animeLek,WitAnimeCatalog(),DonghuaCatalog()))
  @Provides @Singleton fun oauthManager(app:Application)=OAuthManager(app)
 }

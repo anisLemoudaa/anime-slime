@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
-data class SourceAnime(val url:String,val title:String,val cover:String?=null,val description:String?=null)
+data class SourceAnime(val url:String,val title:String,val cover:String?=null,val description:String?=null,val sourceId:String="animelek")
 class AnimeLekSource{
  val baseUrl="https://animelek.cc/home"
  private val client=OkHttpClient.Builder().connectTimeout(15,TimeUnit.SECONDS).readTimeout(25,TimeUnit.SECONDS).build()

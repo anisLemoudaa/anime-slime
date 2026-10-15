@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Anime Slime</string>
+    <string name="disclaimer">لا يحتوي التطبيق على محتوى أو مصادر مدمجة. أنت مسؤول عن المستودعات والمصادر التي تضيفها وعن قانونية استخدامها.</string>
+    <string name="repository_url">رابط المستودع</string>
+    <string name="add">إضافة</string>
+    <string name="error_invalid_url">الرابط غير صالح</string>
+    <string name="error_network">تعذر الاتصال بالمصدر</string>
+</resources>

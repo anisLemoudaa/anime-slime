@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Anime Slime</string>
+    <string name="disclaimer">The app contains no bundled content or sources. You are responsible for repositories and sources you add and their legality.</string>
+    <string name="repository_url">Repository URL</string>
+    <string name="add">Add</string>
+    <string name="error_invalid_url">Invalid URL</string>
+    <string name="error_network">Could not connect to source</string>
+</resources>

@@ -24,6 +24,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 
+@androidx.annotation.OptIn(markerClass = [androidx.media3.common.util.UnstableApi::class])
 @Composable
 fun PlayerScreen(videoUrl:String?,onBack:()->Unit){
  if(videoUrl.isNullOrBlank()){MessagePlayer("لا يوجد رابط فيديو من المصدر بعد",onBack);return}

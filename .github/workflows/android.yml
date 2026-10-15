@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,6 +28,8 @@ jobs:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses >/dev/null || true
+      - name: Validate OAuth secret is configured
+        run: test -n "$ANILIST_CLIENT_SECRET"
       - name: Build and test
         run: chmod +x gradlew && ./gradlew testDebugUnitTest lintDebug assembleDebug --no-daemon
       - name: Upload debug APK

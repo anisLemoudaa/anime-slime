@@ -3,6 +3,9 @@ package com.animeslime.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import android.net.Uri
+import android.app.PictureInPictureParams
+import android.os.Build
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); setContent { AnimeSlimeTheme { AnimeSlimeApp() } } }
+    override fun onUserLeaveHint(){super.onUserLeaveHint();if(Build.VERSION.SDK_INT>=26&&!isFinishing)enterPictureInPictureMode(PictureInPictureParams.Builder().build())}
 }
 
 data class NavItem(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
@@ -43,13 +47,16 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
         Scaffold(containerColor=Ink, bottomBar={ if(route in items.map{it.route}) BottomBar(items, route){nav.navigate(it){popUpTo("home"){saveState=true};launchSingleTop=true;restoreState=true}} }) { pad ->
             NavHost(navController=nav,startDestination="home",modifier=Modifier.padding(pad)) {
                 composable("home"){HomeScreen{nav.navigate("details")}}
+                composable("search"){SearchScreen({nav.popBackStack()}){url->nav.navigate("sourceDetails/${Uri.encode(url)}")}}
+                composable("sourceDetails/{url}"){entry->SourceDetailsScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()),{nav.popBackStack()}){video->nav.navigate("player?url=${Uri.encode(video)}")}}
                 composable("library"){LibraryScreen{nav.navigate("details")}}
                 composable("updates"){UpdatesScreen()}
                 composable("browse"){BrowseScreen()}
-                composable("more"){MoreScreen{nav.navigate("settings")}}
+                composable("more"){MoreScreen({nav.navigate("settings")}){nav.navigate("backup")}}
                 composable("settings"){SettingsScreen{nav.popBackStack()}}
-                composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player")}}
-                composable("player"){PlayerScreen(null){nav.popBackStack()}}
+                composable("backup"){BackupScreen{nav.popBackStack()}}
+                composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player?url=")}}
+                composable("player?url={url}"){entry->PlayerScreen(entry.arguments?.getString("url")?.let(Uri::decode)){nav.popBackStack()}}
             }
         }
     }

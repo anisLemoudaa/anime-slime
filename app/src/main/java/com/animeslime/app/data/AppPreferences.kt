@@ -11,5 +11,10 @@ class AppPreferences(private val context:Context){
  suspend fun setFirstRun(value:Boolean)=context.store.edit{it[K.firstRun]=value}
  suspend fun setStealth(value:Boolean)=context.store.edit{it[K.stealth]=value}
  suspend fun setTheme(value:String)=context.store.edit{it[K.dark]=value}
+ suspend fun setAutoIntro(value:Boolean)=context.store.edit{it[K.autoIntro]=value}
+ suspend fun setAutoNext(value:Boolean)=context.store.edit{it[K.autoNext]=value}
+ suspend fun setWifiOnly(value:Boolean)=context.store.edit{it[K.wifiOnly]=value}
+ suspend fun setNotifications(value:Boolean)=context.store.edit{it[K.notifications]=value}
+ suspend fun setAccent(value:String)=context.store.edit{it[K.accent]=value}
 }
 data class Settings(val firstRun:Boolean,val theme:String,val accent:String,val language:String,val autoIntro:Boolean,val autoNext:Boolean,val skipSeconds:Int,val wifiOnly:Boolean,val stealth:Boolean,val hiddenAdult:Boolean,val notifications:Boolean)

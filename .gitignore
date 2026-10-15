@@ -6,3 +6,5 @@ build/
 app/build/
 .externalNativeBuild/
 .cxx/
+*.jks
+*.keystore

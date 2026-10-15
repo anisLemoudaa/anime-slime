@@ -7,7 +7,7 @@ plugins {
 }
 
 android { namespace = "com.animeslime.app"; compileSdk = 35
-    defaultConfig { applicationId = "com.animeslime.app"; minSdk = 26; targetSdk = 35; versionCode = 1; versionName = "0.2.0" }
+    defaultConfig { applicationId = "com.animeslime.app"; minSdk = 26; targetSdk = 35; versionCode = 100; versionName = "1.0.0" }
     buildFeatures { compose = true; buildConfig = true }
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }

@@ -19,13 +19,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.animeslime.app.data.Repository
 import com.animeslime.app.ui.RepositoryViewModel
 import com.animeslime.app.ui.SettingsViewModel
+import com.animeslime.app.ui.LibraryViewModel
 import com.animeslime.app.ui.theme.*
 
-@Composable fun LibraryScreen(open:()->Unit)=LazyColumn(Modifier.fillMaxSize().background(Ink)){
+@Composable fun LibraryScreen(open:()->Unit){val vm:LibraryViewModel=hiltViewModel();val items by vm.items.collectAsState();LazyColumn(Modifier.fillMaxSize().background(Ink)){
  item{Header("المكتبة")}; item{Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){Chip("الكل 24",true);Chip("أشاهده 9");Chip("مكتمل 8");Chip("أخطط 7")}}
  item{Surface(color=Surface,shape=RoundedCornerShape(18.dp),modifier=Modifier.padding(20.dp,14.dp)){Row(Modifier.padding(14.dp),verticalAlignment=Alignment.CenterVertically){Text("3 حلقات جديدة · آخر تحديث قبل 3 ساعات",Modifier.weight(1f),fontSize=13.sp);IconButton({}){Icon(Icons.Default.Refresh,"تحديث",tint=Mint)}}}}
- items(listOf("ظل الفجر","سيف العاصفة","مدرسة الأرواح","كوكب الحدود","ملاذ النجوم","صياد الليل")){Poster(it,open)}
-}
+ if(items.isEmpty()) item{Text("مكتبتك فارغة. افتح عملًا من التصفح واضغط + المكتبة.",color=Muted,modifier=Modifier.padding(20.dp))} else items(items){anime->Poster(anime.title,open)}
+ }}
 @Composable fun Poster(title:String,open:()->Unit){Row(Modifier.fillMaxWidth().padding(horizontal=20.dp,vertical=5.dp).clickable{open()},verticalAlignment=Alignment.CenterVertically){Box(Modifier.size(72.dp,96.dp).clip(RoundedCornerShape(14.dp)).background(Brush.linearGradient(listOf(Mint,Color(0xFF1E1B4B)))));Column(Modifier.padding(12.dp)){Text(title,fontWeight=FontWeight.Bold);Text("12 حلقة · 3 غير مشاهدة",color=Muted,fontSize=12.sp)}}}
 
 @Composable fun UpdatesScreen()=LazyColumn(Modifier.fillMaxSize().background(Ink)){item{Header("التحديثات")};item{Row(Modifier.padding(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){Chip("التحديثات",true);Chip("السجل");Chip("التنزيلات")}};items(listOf("ظل الفجر · الحلقة 4","كوكب الحدود · الحلقة 11","ملاذ النجوم · الحلقة 12")){NewRow(it,"متاح الآن")}}

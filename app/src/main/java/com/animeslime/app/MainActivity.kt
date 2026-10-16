@@ -51,7 +51,15 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
             NavHost(navController=nav,startDestination="home",modifier=Modifier.padding(pad)) {
                 composable("home"){HomeScreen({url->nav.navigate("sourceDetails/${Uri.encode(url)}")}){nav.navigate("search")}}
                 composable("search"){SearchScreen({nav.popBackStack()}){url->nav.navigate("sourceDetails/${Uri.encode(url)}")}}
-                composable("sourceDetails/{url}"){entry->SourceDetailsScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()),{nav.popBackStack()}){video->if(video.contains("#episode-")||video.contains("animelek.cc")||video.contains("animedar.net")||video.contains("witanime.site")||video.contains("donghua-ar.me")||video.contains("filemoon")||video.contains("bysezoxexe"))nav.navigate("webEpisode?url=${Uri.encode(video.substringBefore("#"))}")else nav.navigate("player?url=${Uri.encode(video)}")}}
+                composable("sourceDetails/{url}"){entry->SourceDetailsScreen(Uri.decode(entry.arguments?.getString("url").orEmpty()),{nav.popBackStack()}){video->
+                    val clean=video.trim()
+                    when {
+                        clean.startsWith("http://",true) || clean.startsWith("https://",true) ->
+                            if (isDirectMediaUrl(clean)) nav.navigate("player?url=${Uri.encode(clean)}")
+                            else nav.navigate("webEpisode?url=${Uri.encode(clean)}")
+                        else -> nav.navigate("webEpisode?url=${Uri.encode(clean)}")
+                    }
+                }}
                 composable("library"){LibraryScreen{nav.navigate("details")}}
                 composable("updates"){UpdatesScreen()}
                 composable("browse"){BrowseScreen()}
@@ -60,12 +68,17 @@ data class NavItem(val route: String, val label: String, val icon: androidx.comp
                 composable("settings"){SettingsScreen{nav.popBackStack()}}
                 composable("backup"){BackupScreen{nav.popBackStack()}}
                 composable("downloads"){DownloadsScreen{nav.popBackStack()}}
-                composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("player?url=")}}
+                composable("details"){DetailsScreen({nav.popBackStack()}){nav.navigate("webEpisode?url=${Uri.encode("")}")}}
                 composable("player?url={url}"){entry->PlayerScreen(entry.arguments?.getString("url")?.let(Uri::decode)){nav.popBackStack()}}
                 composable("webEpisode?url={url}"){entry->WebEpisodeScreen(Uri.decode(entry.arguments?.getString("url").orEmpty())){nav.popBackStack()}}
             }
         }
     }
+}
+
+private fun isDirectMediaUrl(url:String):Boolean = url.substringBefore('?').lowercase().let {
+    it.endsWith(".m3u8") || it.endsWith(".mp4") || it.endsWith(".mkv") ||
+        it.endsWith(".webm") || it.endsWith(".mpd") || it.contains("/manifest")
 }
 
 @Composable fun BottomBar(items:List<NavItem>, selected:String, onClick:(String)->Unit){ Surface(color=Surface.copy(.96f),shape=RoundedCornerShape(32.dp),tonalElevation=8.dp,modifier=Modifier.padding(16.dp).height(70.dp)){Row(Modifier.fillMaxSize().padding(6.dp),horizontalArrangement=Arrangement.SpaceEvenly){items.forEach{val on=it.route==selected;Box(Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(26.dp)).background(if(on) Brush.linearGradient(listOf(Mint,Sky)) else Brush.linearGradient(listOf(Color.Transparent,Color.Transparent))).clickable{onClick(it.route)},contentAlignment=Alignment.Center){Column(horizontalAlignment=Alignment.CenterHorizontally){Icon(it.icon,null,tint=if(on)Color(0xFF04121A) else Muted,modifier=Modifier.size(22.dp));Text(it.label,fontSize=11.sp,color=if(on)Color(0xFF04121A) else Muted,fontWeight=if(on)FontWeight.Bold else FontWeight.Normal)}}}}}}

@@ -20,6 +20,8 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
@@ -33,7 +35,10 @@ fun PlayerScreen(videoUrl:String?,onBack:()->Unit){
  var speed by remember(videoUrl){mutableFloatStateOf(1f)}
  var loading by remember(videoUrl){mutableStateOf(true)}
  var error by remember(videoUrl){mutableStateOf<String?>(null)}
- val player=remember(videoUrl){ExoPlayer.Builder(context).build().apply{val item=MediaItem.Builder().setUri(videoUrl).apply{if(videoUrl.contains(".m3u8",true))setMimeType(MimeTypes.APPLICATION_M3U8)}.build();setMediaItem(item);prepare();playWhenReady=true}}
+ val player=remember(videoUrl){
+  val http=DefaultHttpDataSource.Factory().setUserAgent("Mozilla/5.0 (Android) AnimeSlime/1.0").setAllowCrossProtocolRedirects(true)
+  ExoPlayer.Builder(context).setMediaSourceFactory(DefaultMediaSourceFactory(http)).build().apply{val item=MediaItem.Builder().setUri(videoUrl).apply{if(videoUrl.contains(".m3u8",true))setMimeType(MimeTypes.APPLICATION_M3U8)}.build();setMediaItem(item);prepare();playWhenReady=true}
+ }
  val session=remember(player){MediaSession.Builder(context,player).build()}
  DisposableEffect(player){val listener=object:Player.Listener{override fun onPlaybackStateChanged(state:Int){loading=state==Player.STATE_BUFFERING||state==Player.STATE_IDLE};override fun onPlayerError(exception:PlaybackException){loading=false;error=exception.errorCodeName+": "+(exception.message ?: "خطأ غير معروف")} };player.addListener(listener);onDispose{player.removeListener(listener);session.release();player.release()}}
  BackHandler(onBack=onBack)

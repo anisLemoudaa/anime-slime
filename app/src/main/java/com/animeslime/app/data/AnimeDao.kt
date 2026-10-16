@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
  @Query("SELECT * FROM Anime WHERE inLibrary=1 ORDER BY lastUpdate DESC") fun library():Flow<List<Anime>>
  @Query("SELECT * FROM Anime WHERE title LIKE '%' || :q || '%' ORDER BY title LIMIT 100") fun search(q:String):Flow<List<Anime>>
  @Query("SELECT * FROM Anime WHERE id=:id LIMIT 1") fun byId(id:Long):Flow<Anime?>
+ @Query("SELECT * FROM Anime WHERE sourceId=:sourceId AND url=:url LIMIT 1") suspend fun bySourceAndUrl(sourceId:String,url:String):Anime?
  @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsert(anime:Anime):Long
  @Query("UPDATE Anime SET inLibrary=:value,lastUpdate=:time WHERE id=:id") suspend fun setLibrary(id:Long,value:Boolean,time:Long=System.currentTimeMillis())
  @Query("DELETE FROM Anime WHERE id=:id") suspend fun delete(id:Long)
@@ -15,6 +16,7 @@ data class DownloadRow(val episodeId:Long,val url:String,val state:String,val pr
  @Query("SELECT * FROM Episode WHERE animeId=:animeId ORDER BY number ASC") fun forAnime(animeId:Long):Flow<List<Episode>>
  @Query("SELECT * FROM Episode WHERE id=:id LIMIT 1") suspend fun byId(id:Long):Episode?
  @Query("SELECT * FROM Episode WHERE animeId=:animeId AND number=:number LIMIT 1") suspend fun byAnimeAndNumber(animeId:Long,number:Double):Episode?
+ @Query("SELECT * FROM Episode WHERE animeId=:animeId AND url=:url LIMIT 1") suspend fun byAnimeAndUrl(animeId:Long,url:String):Episode?
  @Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun upsertAll(episodes:List<Episode>)
  @Query("UPDATE Episode SET seen=:seen,progressMs=:progress,durationMs=:duration WHERE id=:id") suspend fun saveProgress(id:Long,seen:Boolean,progress:Long,duration:Long)
  @Query("UPDATE Episode SET downloaded=:value WHERE id=:id") suspend fun setDownloaded(id:Long,value:Boolean)
